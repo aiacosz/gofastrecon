@@ -1,0 +1,31 @@
+robots.txt
+sitemap.xml
+sitemap.xml.gz
+crossdomain.xml
+phpinfo.php
+test.php
+elmah.axd
+server-status
+jmx-console
+admin-console
+web-console
+swagger.json
+api.json
+app.js
+aws.js
+../../etc/passwd
+
+
+//DNSNS returns DNS records for a given domain
+func DNSNS(url string) {
+	hostname := stripURL(url)
+	addr, err := net.LookupNS(hostname)
+	if err != nil {
+		fmt.Println(utils.Red("[DnsNS] errr.."))
+		log.Fatal(err)
+	}
+	for i := 0; i < len(addr); i++ {
+		fmt.Print(utils.Yellow("DNS: "))
+		fmt.Printf("%s \n", addr[i].Host)
+	}
+}
