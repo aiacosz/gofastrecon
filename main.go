@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"./cms"
 	"./crawler"
 	"./resolvers"
 	"./utils"
@@ -42,4 +43,7 @@ func main() {
 	resolvers.LookupHost(*url)
 	// resolvers.DNSNS(*url) buggie
 	crawler.Resolve(*url)
+	crawler.GetCommonHeaders(*url)
+	resolvers.DNSApi(*url)
+	cms.WPScan(*url)
 }

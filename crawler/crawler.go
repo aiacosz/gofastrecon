@@ -2,7 +2,9 @@ package crawler
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"strings"
 
 	"../utils"
 )
@@ -58,6 +60,59 @@ func sendRequests(endpoints []string, url string) {
 			//bodyString := string(bodyBytes)
 			//fmt.Println(bodyString)
 		}
+	}
+
+}
+
+// GetCommonHeaders get headers of response
+func GetCommonHeaders(url string) {
+	fmt.Println(utils.Yellow("[+] Try to get some headers"))
+	req, err := http.Get(url)
+	if err != nil {
+		fmt.Println(utils.Red("[GetCommonHeaders] err"))
+		log.Fatal(err)
+	}
+
+	headers := req.Header
+	for k, v := range headers {
+
+		if strings.Contains(k, "X-Powered-By") {
+			fmt.Printf("%s  :  %s", k, v)
+			fmt.Println()
+		}
+
+		if strings.Contains(k, "Server") {
+			fmt.Printf("%s  :  %s", k, v)
+			fmt.Println()
+		}
+
+		if strings.Contains(k, "Access-Control-Allow-Origin") {
+			fmt.Printf("%s  :  %s", k, v)
+			fmt.Println()
+		}
+
+		if strings.Contains(k, "Access-Control-Allow-Credential") {
+			fmt.Printf("%s  :  %s", k, v)
+			fmt.Println()
+		}
+
+		if strings.Contains(k, "Access-Control-Allow-Methods") {
+			fmt.Printf("%s  :  %s", k, v)
+			fmt.Println()
+		}
+
+		if strings.Contains(k, "X-XSS-Protection") {
+			fmt.Printf("%s  :  %s", k, v)
+			fmt.Println(utils.Blue("Maybe some XSS atacks not be effective.."))
+			fmt.Println()
+		}
+
+		if strings.Contains(k, "strict-transport-security") {
+			fmt.Printf("%s  :  %s", k, v)
+			fmt.Println(utils.Blue("HSTS attacks.. not be effective.."))
+			fmt.Println()
+		}
+
 	}
 
 }
