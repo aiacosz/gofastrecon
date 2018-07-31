@@ -1,12 +1,40 @@
 package cms
 
 import (
+	"crypto/tls"
 	"fmt"
-	"log"
 	"net/http"
+	"time"
 
 	"../utils"
 )
+
+func sendRequests(url string) {
+
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	}
+	client := &http.Client{
+		Transport: tr,
+		Timeout:   3 * time.Second,
+	}
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err.Error()) // Fails here
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusOK {
+		fmt.Print(utils.Red("Sucess: "))
+		fmt.Println(utils.Yellow(url))
+	}
+}
 
 // WPScan crawlling common paths and dorks for wordpress
 func WPScan(url string) {
@@ -27,27 +55,101 @@ func WPScan(url string) {
 		"/wp-includes/ID3/license.commercial.txt",
 		"/wp-content/themes/twentythirteen/fonts/COPYING.txt",
 		"/wp-content/themes/twentythirteen/fonts/LICENSE.txt",
-		"/wp-config",
+		"/wp-config.php",
 		"/wp-login",
 	}
 
 	for _, v := range defaultPaths {
 		uri := url + v
-		req, err := http.NewRequest("GET", uri, nil)
-		if err != nil {
-			fmt.Println(utils.Red("[WPScan] err"))
-			log.Fatal(err)
-		}
-
-		resp, err := http.DefaultClient.Do(req)
-		if err != nil {
-			fmt.Println(utils.Red("[WPScan] err"))
-			log.Fatal(err)
-		}
-
-		if resp.StatusCode == 200 {
-			fmt.Printf("[+] found: %s \n", uri)
-		}
+		sendRequests(uri)
 
 	}
+}
+
+// JoomScan searching for file like joomla
+func JoomScan(url string) {
+	var defaultPaths = [...]string{
+		"/joomla/administrator",
+		"/joomla/admin",
+		"/configuration.php",
+		"/administrator/index.php",
+		"/joomla.xml",
+		"/htaccess.txt",
+		"/administrator/templates/hathor/LICENSE.txt",
+		"/web.config.txt",
+		"/robots.txt.dist",
+		"/LICENSE.txt",
+		"/media/jui/fonts/icomoon-license.txt",
+		"/media/editors/tinymce/jscripts/tiny_mce/license.txt",
+		"/media/editors/tinymce/jscripts/tiny_mce/plugins/style/readme.txt",
+		"/libraries/idna_convert/ReadMe.txt",
+		"/libraries/simplepie/README.txt",
+		"/libraries/simplepie/LICENSE.txt",
+		"/libraries/simplepie/idn/ReadMe.txt",
+	}
+
+	for _, v := range defaultPaths {
+		uri := url + v
+		sendRequests(uri)
+
+	}
+}
+
+// DrupScan searching for common files drupal
+func DrupScan(url string) {
+	var defaultPaths = [...]string{
+		"/modules/simpletest/files/php-1.txt",
+		"/modules/simpletest/files/sql-1.txt",
+		"/modules/simpletest/files/html-1.txt",
+		"/modules/simpletest/tests/common_test_info.txt",
+		"/modules/filter/tests/filter.url-output.txt",
+		"/modules/filter/tests/filter.url-input.txt",
+		"/modules/search/tests/UnicodeTest.txt",
+		"/themes/README.txt",
+		"/themes/stark/README.txt",
+		"/sites/README.txt",
+		"/sites/all/modules/README.txt",
+		"/sites/all/themes/README.txt",
+		"/modules/simpletest/files/html-2.html",
+		"/modules/color/preview.html",
+		"/themes/bartik/color/preview.html",
+		"/UPGRADE.txt",
+		"/CHANGELOG.txt",
+		"/INSTALL.sqlite.txt",
+		"/LICENSE.txt",
+		"/INSTALL.txt",
+		"/COPYRIGHT.txt",
+		"/web.config",
+		"/modules/README.txt",
+		"/modules/simpletest/files/README.txt",
+		"/modules/simpletest/files/javascript-1.txt",
+	}
+
+	for _, v := range defaultPaths {
+		uri := url + v
+		sendRequests(uri)
+
+	}
+}
+
+// NodeCMSCommons common nodeJS files
+func NodeCMSCommons(url string) {
+	var defaultPaths = [...]string{
+		"/api/controllers",
+		"/node_modules",
+		"/hooks",
+		"/middleware",
+		"/routes.json",
+		"/api/controllers/index.js",
+		"/api/controllers/index.js",
+		"/packages.json",
+		"/requests.json",
+	}
+
+	for _, v := range defaultPaths {
+		uri := url + v
+		sendRequests(uri)
+
+	}
+
 }
