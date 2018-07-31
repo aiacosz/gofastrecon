@@ -1,65 +1,73 @@
 package crawler
 
 import (
+	"crypto/tls"
 	"fmt"
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"../utils"
 )
 
-var commonFiles = []string{
-	"robots.txt",
-	"sitemap.xml",
-	"sitemap.xml.gz",
-	"crossdomain.xml",
-	"phpinfo.php",
-	"test.php",
-	"elmah.axd",
-	"server-status",
-	"jmx-console",
-	"admin-console",
-	"web-console",
-	"swagger.json",
-	"api.json",
-	"trace.axd",
-	"admin",
-	"app.js",
-	"aws.js",
-	"../../etc/passwd",
+func sendRequests(url string) {
+
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
+	}
+	client := &http.Client{
+		Transport: tr,
+		Timeout:   3 * time.Second,
+	}
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err.Error()) // Fails here
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusOK {
+		fmt.Print(utils.Red("Sucess: "))
+		fmt.Println(utils.Yellow(url))
+	}
 }
 
-//Resolve GOHORSE
-func Resolve(url string) {
-	sendRequests(commonFiles, url)
-}
+//CrawlerCommonFiles make requests to endpoints
+func CrawlerCommonFiles(url string) {
 
-//SendRequests recive array of strings and make requests to endpoints
-func sendRequests(endpoints []string, url string) {
+	var commonFiles = []string{
+		"robots.txt",
+		"sitemap.xml",
+		"sitemap.xml.gz",
+		"crossdomain.xml",
+		"phpinfo.php",
+		"test.php",
+		"elmah.axd",
+		"graphql",
+		"server-status",
+		"jmx-console",
+		"admin-console",
+		"web-console",
+		"swagger.json",
+		"api.json",
+		"trace.axd",
+		"admin",
+		"app.js",
+		"aws.js",
+		"../../etc/passwd",
+	}
 
-	for _, endpoint := range endpoints {
+	for _, endpoint := range commonFiles {
 		schema := url + "/" + endpoint
+		sendRequests(schema)
+		continue
 
-		req, err := http.Get(schema)
-		if err != nil {
-			fmt.Println(utils.Red("[sendRequests] err.."))
-			panic(err)
-		}
-		defer req.Body.Close()
-
-		//bodyBytes, err := ioutil.ReadAll(req.Body)
-		//if err != nil {
-		//	fmt.Println(utils.Red("[sendRequests] err.."))
-		//	panic(err)
-		//}
-
-		if req.StatusCode == 200 {
-			fmt.Print(utils.Yellow("[+] Found! \n"))
-			fmt.Printf(utils.Green(schema + "\n"))
-			//bodyString := string(bodyBytes)
-			//fmt.Println(bodyString)
-		}
 	}
 
 }
@@ -70,7 +78,7 @@ func GetCommonHeaders(url string) {
 	req, err := http.Get(url)
 	if err != nil {
 		fmt.Println(utils.Red("[GetCommonHeaders] err"))
-		log.Fatal(err)
+		log.Print(err)
 	}
 
 	headers := req.Header
