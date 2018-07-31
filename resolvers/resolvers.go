@@ -45,10 +45,11 @@ func stripURL(url string) string {
 // ResolveURL resolv if true goes.. on if not..
 func ResolveURL(url string) {
 	hostname := stripURL(url)
+	fmt.Println(hostname)
 	IPAddr, err := net.ResolveIPAddr("ip", hostname)
 	if err != nil {
 		fmt.Println(utils.Red("Error in resolving IP !!"))
-		log.Fatal(err)
+		log.Print(err)
 		os.Exit(1)
 	}
 
@@ -68,7 +69,7 @@ func LookupHost(url string) {
 	adrs, err := net.LookupHost(hostname)
 	if err != nil {
 		fmt.Println("[LookupHost] errr..")
-		log.Fatal(err)
+		log.Print(err)
 	}
 	for i := 0; i < len(adrs); i++ {
 		segments := strings.SplitAfter(adrs[i], " ")
@@ -82,14 +83,14 @@ func DNSApi(url string) {
 	req, err := http.Get("https://dns-api.org/NS/" + hostname)
 	if err != nil {
 		fmt.Println(utils.Red("[DNSApi] err"))
-		log.Fatal(err)
+		log.Print(err)
 	}
 	defer req.Body.Close()
 
 	bodyBytes, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		fmt.Println(utils.Red("[DNSApi] err"))
-		log.Fatal(err)
+		log.Print(err)
 	}
 	teste := getDNS(bodyBytes)
 	bodyString := string(bodyBytes)
