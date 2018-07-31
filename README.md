@@ -1,5 +1,5 @@
 # gofastrecon
-Tool made for fast recon :) 
+This tool is made for fast recon, search for news headers, new cms nodejs like, aws.. buckets.. etc.. and olds toos :)
 
 ##### parcial usage:
 ``` go run main.go -url https://example.com ```
