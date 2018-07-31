@@ -39,11 +39,16 @@ func main() {
 	start := time.Now()
 	fmt.Println(start.Format("3:04PM"))
 	utils.Banner()
+	fmt.Println(utils.Yellow("[+] Init resolvers scan modules.."))
 	resolvers.ResolveURL(*url)
 	resolvers.LookupHost(*url)
-	// resolvers.DNSNS(*url) buggie
-	crawler.Resolve(*url)
-	crawler.GetCommonHeaders(*url)
 	resolvers.DNSApi(*url)
+	// resolvers.DNSNS(*url) buggie
+	fmt.Println(utils.Yellow("[+] Init Crawlers scan modules.."))
+	crawler.CrawlerCommonFiles(*url)
+	crawler.GetCommonHeaders(*url)
+	fmt.Println(utils.Yellow("[+] Init cms scan modules.."))
 	cms.WPScan(*url)
+	cms.JoomScan(*url)
+	cms.DrupScan(*url)
 }
