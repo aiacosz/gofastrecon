@@ -3,6 +3,7 @@ package crawler
 import (
 	"crypto/tls"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -26,7 +27,7 @@ func sendRequests(url string) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err.Error()) // Fails here
+		log.Println(err)
 		return
 	}
 	defer resp.Body.Close()
@@ -59,7 +60,6 @@ func CrawlerCommonFiles(url string) {
 		"admin",
 		"app.js",
 		"aws.js",
-		"../../etc/passwd",
 	}
 
 	for _, endpoint := range commonFiles {
@@ -88,12 +88,12 @@ func GetCommonHeaders(url string) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err.Error()) // Fails here
+		log.Println(err)
 		return
 	}
 	defer resp.Body.Close()
 
-	headers := req.Header
+	headers := resp.Header
 	for k, v := range headers {
 
 		if strings.Contains(k, "X-Powered-By") {
