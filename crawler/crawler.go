@@ -3,7 +3,6 @@ package crawler
 import (
 	"crypto/tls"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -75,11 +74,24 @@ func CrawlerCommonFiles(url string) {
 // GetCommonHeaders get headers of response
 func GetCommonHeaders(url string) {
 	fmt.Println(utils.Yellow("[+] Try to get some headers"))
-	req, err := http.Get(url)
-	if err != nil {
-		fmt.Println(utils.Red("[GetCommonHeaders] err"))
-		log.Print(err)
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true,
+		},
 	}
+	client := &http.Client{
+		Transport: tr,
+		Timeout:   3 * time.Second,
+	}
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err.Error()) // Fails here
+		return
+	}
+	defer resp.Body.Close()
 
 	headers := req.Header
 	for k, v := range headers {

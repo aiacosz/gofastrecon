@@ -10,6 +10,7 @@ This tool is made for fast recon, search for news headers, new cms nodejs like, 
 3. Find CMS like Joomla, Drupal, Wordpress.
 4. Find CMS NodeJS like
 
-
+** add google nameserver at your /etc/resolv.conf **
+~~echo "nameserver 8.8.8.8" >> /etc/resolv.conf~~
 
 ![alt text](https://github.com/aiacosz/gofastrecon/blob/master/gofastrecon.png)

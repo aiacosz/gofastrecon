@@ -15,18 +15,26 @@ import (
 
 type dns struct {
 	Name  string `json: "name"`
-	Ttl   string `json: "ttl"`
+	TTL   string `json: "ttl"`
 	Type  string `json: "type"`
 	Value string `json: "value"`
 }
 
-func getDNS(body []byte) *dns {
-	var d = new(dns)
-	err := json.Unmarshal(body, &d)
+func stripNullJSON(body string) []string {
+	newArray := strings.Split(body, "[")
+	//fmt.Println(newArray)
+	return newArray
+}
+
+func getDNS(body []byte) {
+	// var d = new(dns)
+	var t []dns
+	err := json.Unmarshal(body, &t)
 	if err != nil {
+		log.Println(err)
 		fmt.Println(utils.Red("[getDNS]"))
 	}
-	return d
+	fmt.Printf("[+] DNS INFO: %v\n", t)
 }
 
 func stripURL(url string) string {
@@ -78,7 +86,9 @@ func LookupHost(url string) {
 	}
 }
 
+//DNSApi go to dns-api and retrieve someinfo about dns
 func DNSApi(url string) {
+
 	hostname := stripURL(url)
 	req, err := http.Get("https://dns-api.org/NS/" + hostname)
 	if err != nil {
@@ -92,8 +102,7 @@ func DNSApi(url string) {
 		fmt.Println(utils.Red("[DNSApi] err"))
 		log.Print(err)
 	}
-	teste := getDNS(bodyBytes)
-	bodyString := string(bodyBytes)
-	fmt.Println(teste.Name)
-	fmt.Println(bodyString)
+	stripNullJSON(string(bodyBytes))
+	jsonData := []byte(string(bodyBytes))
+	getDNS(jsonData)
 }
