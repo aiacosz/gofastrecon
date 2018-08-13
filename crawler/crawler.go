@@ -22,6 +22,7 @@ func sendRequests(url string) {
 		Transport: tr,
 		Timeout:   3 * time.Second,
 	}
+
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0")
 
@@ -32,10 +33,12 @@ func sendRequests(url string) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode == http.StatusOK {
-		fmt.Print(utils.Red("Sucess: "))
-		fmt.Println(utils.Yellow(url))
+	fmt.Printf("=> Try %s -- %d \n", url, resp.StatusCode)
+
+	if resp.Header.Get("Location") != "" {
+		fmt.Printf("[+] Redirect found: %s", url)
 	}
+
 }
 
 //CrawlerCommonFiles make requests to endpoints
