@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"../utils"
 )
 
 func sendRequests(url string) {
@@ -17,11 +19,11 @@ func sendRequests(url string) {
 	}
 	client := &http.Client{
 		Transport: tr,
-		Timeout:   3 * time.Second,
+		Timeout:   5 * time.Second,
 	}
 
 	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0")
+	req.Header.Add("User-Agent", utils.RandomAgent())
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -30,7 +32,7 @@ func sendRequests(url string) {
 	}
 	defer resp.Body.Close()
 
-	fmt.Printf("=> Try %s -- %d \n", url, resp.StatusCode)
+	fmt.Printf("[+] %s -- %d \n", url, resp.StatusCode)
 
 	if resp.Header.Get("Location") != "" {
 		fmt.Printf("[+] Redirect found: %s", url)
